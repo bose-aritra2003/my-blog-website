@@ -84,7 +84,7 @@ def register():
         new_user.name = form.name.data
         new_user.email = form.email.data
         new_user.password = hashed_and_salted_password
-        new_user.role = "owner"
+        new_user.role = "user"
 
         try:
             db.session.add(new_user)
