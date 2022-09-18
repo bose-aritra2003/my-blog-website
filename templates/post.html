@@ -66,9 +66,15 @@
                                         </div>
                                         <div class="commentText">
                                             {{comment.text | safe}}
-                                            <p class="date sub-text">
-                                                {{comment.comment_author.name}} | {{ comment.date }}
-                                            </p>
+                                            {% if comment.comment_author.role == 'user' %}
+                                                <p class="date sub-text">
+                                                    {{comment.comment_author.name}} | {{ comment.date }}
+                                                </p>
+                                            {% else %}
+                                                <p class="date sub-text">
+                                                    {{comment.comment_author.name}} | {{ comment.date }} | {{ comment.comment_author.role }}
+                                                </p>
+                                            {% endif %}
                                             {% if comment.author_id == current_user.id or current_user.role == 'owner' or (current_user.role == 'admin' and comment.comment_author.role != 'owner') %}
                                                 <a class="float-left sub-text" href="{{ url_for('delete_comment', post_id=blog.id, comment_id=comment.id) }}">
                                                     <i class="fa-solid fa-xmark"></i> delete
