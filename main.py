@@ -27,7 +27,7 @@ gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=Fa
 db_uri = os.environ.get("DATABASE_URL")
 if db_uri.startswith("postgres://"):
     db_uri = db_uri.replace("postgres://", "postgresql://", 1)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(db_uri, "sqlite:///main.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(db_uri)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
