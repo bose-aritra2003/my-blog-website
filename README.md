@@ -3,3 +3,4 @@
 <p>
 This is first attempt in creating my very own fully fledged blog website with Flask.
 </p>
+View deployment: https://air-blogs.herokuapp.com
