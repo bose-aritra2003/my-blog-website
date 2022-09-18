@@ -1,0 +1,58 @@
+{% include "header.html" %}
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img/home-bg.jpg') }})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="site-heading">
+                            {% if not current_user.is_authenticated %}
+                                <h1>Hi.</h1>
+                                <span class="subheading">Hunting Apple news ? Well, you're at the right place.</span>
+                            {% else %}
+                                <h1>Welcome back, {{ current_user.name.split()[0] }}</h1>
+                                <span class="subheading">Scroll down to see all the latest blogs.</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content-->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+
+                    {% for blog in blogs %}
+                        <!-- Post preview-->
+                        <div class="post-preview">
+                            <a href="{{ url_for('show_post', post_id=blog.id) }}">
+                                <h2 class="post-title">{{ blog.title }}</h2>
+                                <h3 class="post-subtitle">{{ blog.subtitle }}</h3>
+                            </a>
+                            <p class="post-meta">
+                                Posted by <b>{{ blog.author.name }}</b> on <b>{{ blog.date }}</b>
+                                {% if current_user.is_authenticated and current_user.id == 1 %}
+                                    <a class="float-right" href="{{ url_for('delete_post', post_id=blog.id) }}"><i class="fa-solid fa-trash"></i></a>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <!-- Divider-->
+                        {% if blogs[-1] != blog %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Pager-->
+                    {% if current_user.role == 'admin' or current_user.role == 'owner' %}
+                        <div class="clearfix">
+                          <a class="btn btn-primary float-right" href="{{url_for('add_new_post')}}">
+                              New Blog <i class="fa-solid fa-plus"></i>
+                          </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    <hr>
+{% include "footer.html" %}

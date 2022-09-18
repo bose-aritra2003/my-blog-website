@@ -1,0 +1,65 @@
+{% include "header.html" %}
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url({{ url_for('static', filename='assets/img/home-bg.jpg') }})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <div class="site-heading">
+                            <h1>Admin's Panel</h1>
+                            <span class="subheading">Welcome to the dashboard!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+<!-- Main Content-->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+
+                    <div class="post-preview">
+                        <a class="btn float-right" href="{{url_for('admin', choice='admins')}}">
+                            admins <i class="fa-solid fa-filter"></i>
+                        </a>
+                        <a class="btn float-right" href="{{url_for('admin', choice='users')}}">
+                            users <i class="fa-solid fa-filter"></i>
+                        </a>
+                        <a class="btn float-right" href="{{url_for('admin', choice='all')}}">
+                            all <i class="fa-solid fa-filter"></i>
+                        </a>
+                    </div>
+
+                    {% for user in users %}
+                        <!-- Post preview-->
+                        <div class="post-preview">
+                            <a href="mailto:{{ user.email }}">
+                                <h2 class="post-title">{{ user.name }}</h2>
+                                <h3 class="post-subtitle">{{ user.email }}</h3>
+                            </a>
+                            <p class="post-meta">
+                                <b>{{ user.role }}</b>
+                                {% if current_user.id != user.id and user.role != 'owner' %}
+                                    {% if user.role == 'admin' %}
+                                        <a class="float-right" href="{{ url_for('remove_from_admin', user_id=user.id) }}">
+                                            <i class="fa-solid fa-user-minus"></i> demote
+                                        </a>
+                                    {% else %}
+                                        <a class="float-right" href="{{ url_for('make_admin', user_id=user.id) }}">
+                                            <i class="fa-solid fa-user-plus"></i> promote
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <!-- Divider-->
+                        {% if users[-1] != user %}
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    <hr>
+{% include "footer.html" %}
