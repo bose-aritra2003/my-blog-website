@@ -166,9 +166,9 @@ def contact():
 
 # HTML SANITIZER
 def sanitize_html(content):
-    allowed_tags = ['a', 'abbr', 'acronym', 'address', 'b', 'br', 'div', 'dl', 'dt',
+    allowed_tags = ['a', 'abbr', 'acronym', 'address', 'b', 'blockquote', 'br', 'div', 'dl', 'dt',
                     'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img',
-                    'li', 'ol', 'p', 'pre', 'q', 's', 'small', 'strike',
+                    'li', 'ol', 'p', 'pre', 'q', 's', 'small', 'strike', 'strong',
                     'span', 'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th',
                     'thead', 'tr', 'tt', 'u', 'ul']
 
