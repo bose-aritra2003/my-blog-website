@@ -15,19 +15,32 @@
         </header>
         <!-- Main Content-->
             <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-md-10 mx-auto">
+              <div class="row text-center">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                        <img class="img-fluid col-lg-5 col-md-6 col-sm-6 col-6" id='profile-pic' src="{{url_for('static', filename = 'assets/img/profile-pic.png')}}" alt="profile_pic-img">
+                        <p>Hey, I'm Aritra.</p>
+                        <p>The developer of this website.</p>
                         <p>
-                            Hi! I'm Aritra, the developer of Air Blogs.
-                            Currently, I'm pursuing my Bachelor's degree (B. Tech) in Information Technology from the Indian Institute of Engineering Science and Technology, Shibpur.
+                          Currently I'm pursuing my Bachelor's degree (B. Tech) in Information Technology
+                          from the Indian Institute of Engineering Science and Technology, Shibpur.
+                        </p>
+                        <p>
+                          My hobbies primarily include computer programming, photoshop and I love hunting
+                          for new insights in this New Media Age. I have been exposed to the coding world since
+                          5th grade, and I am passionate about it since it gives me a potent tool for
+                          converting my imaginations into reality.
+                        </p>
+                        <p>
+                            To know more about me, checkout my portfolio.
                         </p>
                         <div class="clearfix text-center">
                             <a class="btn btn-primary" href="https://bose-aritra2003.github.io/my-portfolio-website/">
                                 <i class="fa-solid fa-user"></i> My Portfolio
                             </a>
                         </div>
-                    </div>
                 </div>
+              </div>
             </div>
         <hr>
+
 {% include "footer.html" %}
