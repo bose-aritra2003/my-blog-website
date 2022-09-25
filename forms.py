@@ -54,6 +54,12 @@ class OTPForm(FlaskForm):
     submit = SubmitField("Verify")
 
 
+# RESET PASSWORD FORM
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField(makeStrong("New Password"), validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
 # FORM FOR CREATING A COMMENT
 class CommentForm(FlaskForm):
     text = TextAreaField(makeStrong("Comment"), validators=[DataRequired()])

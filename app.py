@@ -3,6 +3,7 @@ from main import *
 # LOGIN MANAGER
 login_manager = LoginManager()
 login_manager.init_app(app)
+OTP = ""
 
 # PASSWORD ENCRYPTION CONFIG
 function = os.environ.get("FUNCTION")
@@ -24,6 +25,30 @@ def load_user(user_id):
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+# HELPER FUNCTIONS
+def sendEmail(data):
+    query = f"Subject: {data['subject']}\n\n" \
+            f"Name: {data['name']}\n" \
+            f"Email: {data['email']}\n" \
+            f"Message: {data['message']}"
+    with smtplib.SMTP("smtp.gmail.com", port=587) as server:
+        server.starttls()
+        server.login(user=sender_email, password=sender_password)
+        server.sendmail(
+            from_addr=sender_email,
+            to_addrs=f'{data["to"]}',
+            msg=query.encode("utf-8")
+        )
+
+
+def generateOTP():
+    digits = "0123456789"
+    otp = ""
+    for i in range(6):
+        otp += digits[math.floor(random.random() * 10)]
+    return otp
 
 
 # PUBLIC ROUTES
@@ -86,15 +111,55 @@ def register():
         new_user.password = hashed_and_salted_password
         new_user.role = "user"
 
-        try:
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user)
-            return redirect(url_for("home"))
-        except exc.IntegrityError:
+        user = db.session.query(User).filter_by(email=new_user.email).first()
+
+        if user:
             flash(f"{warning} That email address is <strong>already in use.</strong> Try log in instead!", 'warning')
             return redirect(url_for("login"))
+
+        else:
+            global OTP
+            OTP = generateOTP()
+            data = {
+                "name": new_user.name,
+                "email": new_user.email,
+                "message": f"Your 6 digit verification code is {OTP}",
+                "subject": "Air Blogs: Verify account",
+                "to": new_user.email,
+            }
+            try:
+                sendEmail(data)
+            except Exception as e:
+                print(e)
+                flash(f"{danger} The <strong>email address</strong> you entered is <strong>invalid.</strong> Try again with a valid one.", 'danger')
+                return redirect(url_for("register"))
+            new_user_string = f'{new_user.name}-{new_user.email}-{new_user.password}-{new_user.role}'
+            return redirect(url_for('verifyRegistration', verify_user=new_user_string))
+
     return render_template("register.html", form=form)
+
+
+@app.route('/register/<verify_user>', methods=['GET', 'POST'])
+def verifyRegistration(verify_user):
+    info_list = verify_user.split("-")
+    form = OTPForm()
+    if form.validate_on_submit():
+        if form.otp.data == OTP:
+            new_user = User()
+            new_user.name = info_list[0]
+            new_user.email = info_list[1]
+            new_user.password = info_list[2]
+            new_user.role = "user"
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            login_user(new_user)
+            return redirect(url_for("home"))
+        else:
+            flash(f"{danger} <strong>Invalid OTP.</strong> Please try again.", 'danger')
+            return redirect(url_for('register'))
+    return render_template('verify.html', form=form, email=info_list[1])
 
 
 @app.route('/<int:post_id>', methods=["GET", "POST"])
@@ -128,21 +193,6 @@ def delete_comment(post_id, comment_id):
     return redirect(url_for('show_post', post_id=post_id))
 
 
-def sendEmail(data):
-    query = f"Subject: {data['subject']}\n\n" \
-            f"Name: {data['name']}\n" \
-            f"Email: {data['email']}\n" \
-            f"Message: {data['message']}"
-    with smtplib.SMTP("smtp.gmail.com", port=587) as server:
-        server.starttls()
-        server.login(user=sender_email, password=sender_password)
-        server.sendmail(
-            from_addr=sender_email,
-            to_addrs=f'{data["to"]}',
-            msg=query.encode("utf-8")
-        )
-
-
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     contact_form = ContactForm() if not current_user.is_authenticated else ContactForm(email=current_user.email)
@@ -157,18 +207,72 @@ def contact():
         try:
             sendEmail(data)
             flash(f"{success} Thank you for <strong>contacting us.</strong> We will get back to you soon.", 'success')
-        except Exception:
+        except Exception as e:
+            print(e)
             flash(f"{warning} Sorry, <strong>something went wrong.</strong> Please try again later.", 'warning')
 
     return render_template('contact.html', form=contact_form)
 
 
-def generateOTP():
-    digits = "0123456789"
-    otp = ""
-    for i in range(6):
-        otp += digits[math.floor(random.random() * 10)]
-    return otp
+# RESET PASSWORD
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    form = EmailForm()
+    if form.validate_on_submit():
+        req_email = form.email.data
+        user = db.session.query(User).filter_by(email=req_email).first()
+        if user:
+            global OTP
+            OTP = generateOTP()
+
+            data = {
+                "name": user.name,
+                "email": user.email,
+                "message": f"Your 6 digit verification code is {OTP}",
+                "subject": "Air Blogs: Request for password reset",
+                "to": req_email,
+            }
+            try:
+                sendEmail(data)
+            except Exception:
+                flash(f"{danger} The email address you entered is <strong>invalid.</strong> Try again with a valid one.",'danger')
+                return redirect(url_for("forgot_password"))
+
+            return redirect(url_for('verifyUser', email=req_email))
+        else:
+            flash(f"{warning} That email address is <strong>not registered.</strong> Please register first.", 'warning')
+            return redirect(url_for('register'))
+    return render_template('email.html', form=form)
+
+
+@app.route('/verify/<email>', methods=['GET', 'POST'])
+def verifyUser(email):
+    form = OTPForm()
+    if form.validate_on_submit():
+        if form.otp.data == OTP:
+            return redirect(url_for('reset_password', email=email))
+        else:
+            flash(f"{danger} <strong>Invalid OTP.</strong> Please try again.", 'danger')
+            return redirect(url_for('forgot_password'))
+    return render_template('verify.html', form=form, email=email)
+
+
+@app.route('/reset-password/<email>', methods=['GET', 'POST'])
+def reset_password(email):
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_and_salted_password = generate_password_hash(
+            request.form.get('password'),
+            method=f'{function}:{algorithm}:{rounds}',
+            salt_length=salt_length
+        ).split('$', 1)[1]
+
+        user = db.session.query(User).filter_by(email=email).first()
+        user.password = hashed_and_salted_password
+        db.session.commit()
+        flash(f"{success} Your password has been <strong>reset successfully.</strong> Please log in.", 'success')
+        return redirect(url_for('login'))
+    return render_template('reset-pass.html', form=form)
 
 
 # ADMIN-ONLY ROUTES
@@ -203,6 +307,7 @@ def admin_only(f):
         if current_user.role != "admin" and current_user.role != "owner":
             return abort(403)
         return f(*args, **kwargs)
+
     return decorated_function
 
 
