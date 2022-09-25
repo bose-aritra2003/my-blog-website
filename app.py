@@ -138,7 +138,7 @@ def sendEmail(data):
         server.login(user=sender_email, password=sender_password)
         server.sendmail(
             from_addr=sender_email,
-            to_addrs=f'{owner_email}',
+            to_addrs=f'{data["to"]}',
             msg=query.encode("utf-8")
         )
 
@@ -151,7 +151,8 @@ def contact():
             "name": contact_form.name.data,
             "email": contact_form.email.data,
             "subject": contact_form.subject.data,
-            "message": contact_form.message.data
+            "message": contact_form.message.data,
+            "to": owner_email
         }
         try:
             sendEmail(data)
@@ -160,6 +161,14 @@ def contact():
             flash(f"{warning} Sorry, <strong>something went wrong.</strong> Please try again later.", 'warning')
 
     return render_template('contact.html', form=contact_form)
+
+
+def generateOTP():
+    digits = "0123456789"
+    otp = ""
+    for i in range(6):
+        otp += digits[math.floor(random.random() * 10)]
+    return otp
 
 
 # ADMIN-ONLY ROUTES
@@ -211,7 +220,7 @@ def admin(choice):
     return render_template('admin-panel.html', users=all_users)
 
 
-@app.route("/admin/<int:user_id>/delete")
+@app.route("/dashboard/<int:user_id>/delete")
 @login_required
 @admin_only
 def remove_from_admin(user_id):
@@ -222,12 +231,33 @@ def remove_from_admin(user_id):
     return redirect(url_for('admin', choice='all'))
 
 
-@app.route("/admin/<int:user_id>/add")
+@app.route("/dashboard/<int:user_id>/add")
 @login_required
 @admin_only
 def make_admin(user_id):
     admin_to_make = db.session.query(User).get(user_id)
     admin_to_make.role = "admin"
+    db.session.commit()
+
+    return redirect(url_for('admin', choice='all'))
+
+
+@app.route("/dashboard/<int:user_id>/remove")
+@login_required
+@admin_only
+def delete_user(user_id):
+    blog_to_delete = BlogPost.query.filter_by(author_id=user_id).all()
+    for blog in blog_to_delete:
+        db.session.delete(blog)
+        db.session.commit()
+
+    comment_to_delete = Comment.query.filter_by(author_id=user_id).all()
+    for comment in comment_to_delete:
+        db.session.delete(comment)
+        db.session.commit()
+
+    user_to_delete = db.session.query(User).get(user_id)
+    db.session.delete(user_to_delete)
     db.session.commit()
 
     return redirect(url_for('admin', choice='all'))
@@ -303,4 +333,3 @@ def delete_post(post_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-

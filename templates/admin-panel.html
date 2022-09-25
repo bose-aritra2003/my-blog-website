@@ -46,8 +46,11 @@
                                             <i class="fa-solid fa-user-minus"></i> demote
                                         </a>
                                     {% else %}
-                                        <a class="float-right" href="{{ url_for('make_admin', user_id=user.id) }}">
+                                        <a class="float-right px-2" href="{{ url_for('make_admin', user_id=user.id) }}">
                                             <i class="fa-solid fa-user-plus"></i> promote
+                                        </a>
+                                        <a class="float-right px-2" href="{{ url_for('delete_user', user_id=user.id) }}">
+                                            <i class="fa-solid fa-ban"></i> remove
                                         </a>
                                     {% endif %}
                                 {% endif %}

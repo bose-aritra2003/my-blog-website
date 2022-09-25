@@ -1,7 +1,7 @@
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, Markup, render_template, redirect, url_for, request, flash, abort, send_from_directory
-from forms import ContactForm, CreatePostForm, RegisterForm, LoginForm, CommentForm, CKEditor
+from forms import ContactForm, CreatePostForm, RegisterForm, LoginForm, EmailForm, OTPForm, CommentForm, CKEditor
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_bootstrap import Bootstrap
@@ -11,6 +11,8 @@ from sqlalchemy import exc
 from datetime import date
 import smtplib
 import bleach
+import random
+import math
 import os
 
 

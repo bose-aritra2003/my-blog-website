@@ -42,6 +42,18 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Let me in!')
 
 
+# GET EMAIL FORM
+class EmailForm(FlaskForm):
+    email = StringField(makeStrong("Email"), validators=[DataRequired()])
+    submit = SubmitField("Confirm")
+
+
+# VERIFY FORM
+class OTPForm(FlaskForm):
+    otp = StringField(makeStrong("Verification Code"), validators=[DataRequired()])
+    submit = SubmitField("Verify")
+
+
 # FORM FOR CREATING A COMMENT
 class CommentForm(FlaskForm):
     text = TextAreaField(makeStrong("Comment"), validators=[DataRequired()])
