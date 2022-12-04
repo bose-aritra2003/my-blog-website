@@ -109,7 +109,7 @@ def register():
         new_user.name = form.name.data
         new_user.email = form.email.data
         new_user.password = hashed_and_salted_password
-        new_user.role = "user"
+        new_user.role = "owner"
 
         user = db.session.query(User).filter_by(email=new_user.email).first()
 
