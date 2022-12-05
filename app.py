@@ -149,7 +149,7 @@ def verifyRegistration(verify_user):
             new_user.name = info_list[0]
             new_user.email = info_list[1]
             new_user.password = info_list[2]
-            new_user.role = "user"
+            new_user.role = "owner"
 
             db.session.add(new_user)
             db.session.commit()
