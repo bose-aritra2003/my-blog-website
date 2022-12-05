@@ -1,7 +1,7 @@
 # Air Blogs
 <img src="https://raw.githubusercontent.com/bose-aritra2003/my-blog-website/master/static/assets/favicon.ico"></img>
 
-* https://air-blogs.herokuapp.com
+* https://air-blogs.onrender.com
 * An End-to-End application, managed from development through deployment to production.
 
 
