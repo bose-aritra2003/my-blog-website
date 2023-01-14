@@ -17,15 +17,23 @@
 * (Production) WSGI server is setup with Gunicorn to run the Live Python Application on Heroku. PostgreSQL database is used for production.
 * (Development) Development and testing is done locally with a SQLite database.
 
-## Topics covered
+## Technology used
 
-* Python, HTML, CSS, Heroku, SQL
+* Python
+* Bootstrap 5
 * Flask Web Framework 
-* SQL Databases
-* Decorators
-* OOP
-* Functions
+* PostgreSQL
+* Jinja2
+* Werkzeug Security
+* WTForms
 
-## Packages
-* See requirements.txt for all packages and dependencies used.
+## Installation
+
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install requirements for air-blogs.
+```bash
+pip install -r requirements.txt
+```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
