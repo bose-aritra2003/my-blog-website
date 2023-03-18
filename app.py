@@ -109,7 +109,7 @@ def register():
         new_user.name = form.name.data
         new_user.email = form.email.data
         new_user.password = hashed_and_salted_password
-        new_user.role = "owner"
+        new_user.role = "user"
 
         user = db.session.query(User).filter_by(email=new_user.email).first()
 
@@ -149,7 +149,7 @@ def verifyRegistration(verify_user):
             new_user.name = info_list[0]
             new_user.email = info_list[1]
             new_user.password = info_list[2]
-            new_user.role = "owner"
+            new_user.role = "user"
 
             db.session.add(new_user)
             db.session.commit()
